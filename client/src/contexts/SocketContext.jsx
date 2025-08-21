@@ -3,13 +3,16 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
+// Create the context
 const SocketContext = createContext(null);
 
+// Custom hook to use the socket
 export const useSocket = () => useContext(SocketContext);
 
-// This line does the same as in api.js
+// Socket server URL (same as api.js)
 const SOCKET_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
+// Provider component
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const { token } = useAuth();
@@ -31,6 +34,7 @@ export const SocketProvider = ({ children }) => {
 
             setSocket(newSocket);
 
+            // Cleanup on unmount
             return () => {
                 newSocket.disconnect();
             };
@@ -38,12 +42,12 @@ export const SocketProvider = ({ children }) => {
             socket.disconnect();
             setSocket(null);
         }
-        // ✅ Add socket in dependency array to avoid stale closure
     }, [token]);
 
+    // ✅ Correct closing tag matches the opening one
     return (
         <SocketContext.Provider value={socket}>
             {children}
-        </SocketContext.Provider>   {/* ✅ fixed closing tag */}
+        </SocketContext.Provider>
     );
 };
