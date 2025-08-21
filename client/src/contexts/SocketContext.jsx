@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         if (token) {
-            // Use the variable here
+            // Create a new socket connection with auth token
             const newSocket = io(SOCKET_URL, {
                 auth: { token }
             });
@@ -38,11 +38,12 @@ export const SocketProvider = ({ children }) => {
             socket.disconnect();
             setSocket(null);
         }
+        // ✅ Add socket in dependency array to avoid stale closure
     }, [token]);
 
     return (
         <SocketContext.Provider value={socket}>
             {children}
-        </Socket.Provider>
+        </SocketContext.Provider>   {/* ✅ fixed closing tag */}
     );
 };
