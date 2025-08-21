@@ -1,22 +1,22 @@
 // /client/src/api/api.js
-
 import axios from 'axios';
 
-// Create an instance of axios
+// This line reads the VITE_API_BASE_URL from your Vercel environment variables.
+// When you run locally (`npm run dev`), Vite is smart enough to know this variable doesn't exist
+// and it will probably work fine, but for deployment this is essential.
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+
 export const api = axios.create({
-    baseURL: 'http://localhost:3001/api', // Your backend API URL
+    baseURL: `${API_URL}/api`, // Use the variable here
     headers: {
         'Content-Type': 'application/json'
     }
 });
 
-// A function to set the auth token on subsequent requests
 export const setAuthToken = (token) => {
     if (token) {
-        // Apply authorization token to every request if logged in
         api.defaults.headers.common['x-auth-token'] = token;
     } else {
-        // Delete auth header
         delete api.defaults.headers.common['x-auth-token'];
     }
 };

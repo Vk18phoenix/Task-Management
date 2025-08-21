@@ -1,5 +1,4 @@
 // /client/src/contexts/SocketContext.jsx
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { useAuth } from './AuthContext';
@@ -8,14 +7,17 @@ const SocketContext = createContext(null);
 
 export const useSocket = () => useContext(SocketContext);
 
+// This line does the same as in api.js
+const SOCKET_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const { token } = useAuth();
 
     useEffect(() => {
         if (token) {
-            // Establish connection only when token is available
-            const newSocket = io('http://localhost:3001', {
+            // Use the variable here
+            const newSocket = io(SOCKET_URL, {
                 auth: { token }
             });
 
@@ -29,14 +31,10 @@ export const SocketProvider = ({ children }) => {
 
             setSocket(newSocket);
 
-            // Cleanup on component unmount or token change
             return () => {
-                console.log('[Socket.io] Disconnecting...');
                 newSocket.disconnect();
             };
         } else if (socket) {
-            // If token is removed (logout), disconnect the existing socket
-            console.log('[Socket.io] Token removed, disconnecting...');
             socket.disconnect();
             setSocket(null);
         }
@@ -45,6 +43,6 @@ export const SocketProvider = ({ children }) => {
     return (
         <SocketContext.Provider value={socket}>
             {children}
-        </SocketContext.Provider>
+        </Socket.Provider>
     );
 };
